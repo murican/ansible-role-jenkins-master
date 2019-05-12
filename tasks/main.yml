@@ -24,3 +24,9 @@
   tags:
   - jenkins
   - jenkins-user
+
+- name: include volume.yml
+  import_tasks: volume.yml
+  tags:
+  - jenkins
+  - jenkins-volume
