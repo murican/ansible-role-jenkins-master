@@ -1,0 +1,50 @@
+---
+- name: import jenkins GPG key for RedHat
+  rpm_key:
+    key: '{{ jenkins_master_key_url }}'
+    state: '{{ jenkins_package_state }}'
+  when:
+  - ansible_os_family == 'RedHat'
+
+- name: ensure repository for RedHat
+  get_url:
+    url: '{{ jenkins_master_repo_url }}'
+    dest: '{{ jenkins_master_repo_folder }}/jenkins.repo'
+  when:
+  - ansible_os_family == 'RedHat'
+
+- name: install apt-transport-https
+  package:
+    name: apt-transport-https
+    state: present
+  when:
+  - ansible_os_family == 'Debian'
+
+- name: import jenkins GPG key Debian
+  apt_key:
+    url: '{{ jenkins_master_key_url }}'
+    state: '{{ jenkins_package_state }}'
+  when:
+  - ansible_os_family == 'Debian'
+
+- name: ensure repository for Debian
+  lineinfile:
+    path: '{{ jenkins_master_repo_folder }}/jenkins.list'
+    line: '{{ jenkins_master_apt_repo_line }}'
+  when:
+  - ansible_os_family == 'Debian'
+
+- name: install unzip tool and java runtime
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+  - unzip
+  - '{{ jenkins_master_java_package_name }}'
+
+- name: ensure jenkins packages from official repository
+  package:
+    name: '{{ item }}'
+    state: '{{ jenkins_package_state }}'
+  with_items: '{{ jenkins_master_package_names | default([]) }}'
+  notify: "restart jenkins_master and wait"

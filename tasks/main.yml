@@ -30,3 +30,9 @@
   tags:
   - jenkins
   - jenkins-volume
+
+- name: include install.yml
+  import_tasks: install.yml
+  tags:
+  - jenkins
+  - jenkins-install

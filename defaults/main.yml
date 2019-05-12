@@ -12,3 +12,5 @@ jenkins_data_vol:
 jenkins_log_vol:
 - name: jenkins_log
   mount_point: "/var/log/jenkins"
+
+jenkins_package_state: present
