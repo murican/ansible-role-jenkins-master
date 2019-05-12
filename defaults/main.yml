@@ -1,0 +1,7 @@
+---
+jenkins_systemuser: jenkins
+jenkins_systemuser_id: 2000
+jenkins_systemgroup: jenkins
+jenkins_systemgroup_id: 2000
+jenkins_master_copy_files: []
+jenkins_master_ensure_files: []
