@@ -1,0 +1,40 @@
+---
+- name: stop jenkins_master
+  service:
+    name: '{{ item }}'
+    state: stopped
+  with_items: '{{ jenkins_service_names | default([]) }}'
+
+- name: start jenkins_master
+  service:
+    name: '{{ item }}'
+    state: started
+  with_items: '{{ jenkins_service_names | default([]) }}'
+
+- name: reload jenkins_master
+  service:
+    name: '{{ item }}'
+    state: reloaded
+  with_items: '{{ jenkins_service_names | default([]) }}'
+
+- name: restart jenkins_master
+  service:
+    name: '{{ item }}'
+    state: restarted
+  listen: "restart jenkins_master and wait"
+  with_items: '{{ jenkins_service_names | default([]) }}'
+
+- name: Wait for Jenkins to start up
+  uri:
+    url: '{{ jenkins_url }}'
+    status_code: 200, 403
+    validate_certs: no
+  register: jenkins_service_status
+  listen: "restart jenkins_master and wait"
+  # Keep trying for 5 mins in 5 sec intervals
+  retries: 60
+  delay: 5
+  until: >
+     'status' in jenkins_service_status and
+     ((jenkins_service_status['status'] == 200) or (jenkins_service_status['status'] == 403))
+  when: not ansible_check_mode
