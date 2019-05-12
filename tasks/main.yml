@@ -1,0 +1,26 @@
+---
+- name: include OS specific variables
+  include_vars: '{{ item }}'
+  with_first_found:
+  - '{{ ansible_distribution }}{{ ansible_distribution_major_version }}.yml'
+  - '{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml'
+  - '{{ ansible_distribution }}.yml'
+  - '{{ ansible_os_family }}.yml'
+  tags:
+  - jenkins
+  - jenkins-user
+  - jenkins-volume
+  - jenkins-install
+  - jenkins-ssl
+  - jenkins-config
+  - jenkins-service
+  - jenkins-logrotate
+  - jenkins-plugins
+  - jenkins-scripts
+  - jenkins-backup
+
+- name: include user.yml
+  import_tasks: user.yml
+  tags:
+  - jenkins
+  - jenkins-user

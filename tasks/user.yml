@@ -1,0 +1,37 @@
+---
+- name: ensure jenkins group exists
+  group:
+    name: "{{ jenkins_systemgroup }}"
+    gid: '{{ jenkins_systemgroup_id | default(omit) }}'
+    state: present
+
+- name: ensure jenkins user exists
+  user:
+    name: "{{ jenkins_systemuser }}"
+    group: "{{ jenkins_systemgroup }}"
+    home: "{{ jenkins_home_dir | default(omit) }}"
+    uid: '{{ jenkins_systemuser_id | default(omit) }}'
+    state: present
+
+- name: ensure user specific files
+  file:
+    src: '{{ item.src | default(omit) }}'
+    dest: '{{ item.dest | default(omit) }}'
+    mode: '{{ item.mode | default(omit) }}'
+    path: '{{ item.path | default(omit) }}'
+    state: '{{ item.state | default(omit) }}'
+    force: '{{ item.force | default(omit) }}'
+    owner: '{{ jenkins_systemuser }}'
+    group: '{{ jenkins_systemgroup }}'
+  with_items: '{{ jenkins_master_ensure_files }}'
+
+- name: copy user specific files to host
+  copy:
+    src: '{{ item.src | default(omit) }}'
+    content: '{{ item.content | default(omit) }}'
+    backup: '{{ item.backup | default(omit) }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ jenkins_systemuser }}'
+    group: '{{ jenkins_systemgroup }}'
+    mode: '{{ item.mode | default(omit) }}'
+  with_items: '{{ jenkins_master_copy_files }}'
